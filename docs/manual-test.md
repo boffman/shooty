@@ -205,14 +205,22 @@ The checksum is also in `dist/shooty-0.1.0.tar.gz.sha256`. The full test
 command `uv run --python 3.12 --with pytest python -m pytest -q` passed with
 51 tests; `git diff --check` passed.
 
+The Ubuntu Dock favorites setting accepted `shooty.desktop`; I restored the
+original favorites list immediately afterward. The Ayatana menu exposed
+Capture and Quit, and both callbacks plus the application hold were checked
+through GTK. I did not visually inspect the indicator in the top bar or pin
+the launcher through the Dock context menu. I tried temporary GNOME custom
+bindings for Shift+Alt+S and a diagnostic key; the X11-injected keys did not
+dispatch, and I restored the original settings. Repeated direct capture
+invocations were exercised earlier, but repeated invocations through the
+custom keyboard shortcut are still unverified.
+
 **Still requiring release sign-off:** There is no Git remote configured and
 `boffman/shooty` does not exist on GitHub. GitHub CLI and REST repository
 creation both returned HTTP 403, `Resource not accessible by personal access
-token`, so no tagged release URL can be reported. I did not pin the launcher
-through the Ubuntu Dock UI, physically
-configure and press the suggested Shift+Alt+S custom shortcut, or visually
-inspect the top-bar indicator menu. This session has one monitor, so negative
-origins, mixed scale factors, seams, and multi-monitor stacking remain
-unverified. Physical-mouse checks and the overwrite confirmation are also
-still listed above. This archive is a tested release candidate; the release
-and complete manual sign-off are not finished.
+token`, so no tagged release URL can be reported. The custom shortcut has not
+been made to dispatch on this session. This session has one monitor, so
+negative origins, mixed scale factors, seams, and multi-monitor stacking
+remain unverified. Physical-mouse checks and the overwrite confirmation are
+also still listed above. This archive is a tested release candidate; the
+release and complete manual sign-off are not finished.
