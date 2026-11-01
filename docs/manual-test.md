@@ -200,14 +200,16 @@ and repeated independent capture invocations are documented under milestones
 2 and 3 above.
 
 Release candidate: `dist/shooty-0.1.0.tar.gz` (116 MB), SHA-256
-`1a8e2040a73750406de223c84b58e51e5255d0fa2dcb6de60c24dd1c013e7764`.
+`84c4904066a2b0ebc2889369cb02dcdc12b38027f570aa7ea3445e96edcb75e9`.
 The checksum is also in `dist/shooty-0.1.0.tar.gz.sha256`. The full test
 command `uv run --python 3.12 --with pytest python -m pytest -q` passed with
 51 tests; `git diff --check` passed.
 
 **Still requiring release sign-off:** There is no Git remote configured and
-`boffman/shooty` does not exist on GitHub, so no tagged release URL can be
-reported. I did not pin the launcher through the Ubuntu Dock UI, physically
+`boffman/shooty` does not exist on GitHub. GitHub CLI and REST repository
+creation both returned HTTP 403, `Resource not accessible by personal access
+token`, so no tagged release URL can be reported. I did not pin the launcher
+through the Ubuntu Dock UI, physically
 configure and press the suggested Shift+Alt+S custom shortcut, or visually
 inspect the top-bar indicator menu. This session has one monitor, so negative
 origins, mixed scale factors, seams, and multi-monitor stacking remain
