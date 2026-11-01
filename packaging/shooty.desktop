@@ -1,0 +1,21 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Shooty
+Comment=Capture and annotate screenshots
+Exec=shooty
+Icon=shooty
+Terminal=false
+Categories=Graphics;
+StartupNotify=true
+Actions=Capture;Indicator;
+
+[Desktop Action Capture]
+Name=Capture a Region
+Exec=shooty capture
+Icon=shooty
+
+[Desktop Action Indicator]
+Name=Start Top Bar Indicator
+Exec=shooty indicator
+Icon=shooty
