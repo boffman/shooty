@@ -1,0 +1,67 @@
+name: Build and publish release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out tagged source
+        uses: actions/checkout@v4
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.7.15"
+
+      - name: Install Ubuntu GTK build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes \
+            python3-gi python3-gi-cairo python3-cairo python3-pil \
+            gir1.2-gtk-3.0 gir1.2-gdkpixbuf-2.0 \
+            gir1.2-ayatanaappindicator3-0.1
+
+      - name: Run test suite
+        run: uv run --python 3.12 --with pytest python -m pytest -q
+
+      - name: Build Ubuntu 24.04 archive
+        run: ./tools/build_release.sh
+
+      - name: Prepare release notes
+        run: |
+          cat > release-notes.md <<'EOF'
+          ## Shooty 0.1.0
+
+          Shooty captures and annotates screenshots on Ubuntu 24.04 GNOME running X11. The archive contains the Python runtime, app, and Pillow, plus user-local install and uninstall scripts, a stable `shooty` command, desktop launcher, SVG icon, and first-run README. Installation does not require root or a Python package manager.
+
+          Download `shooty-0.1.0.tar.gz`, extract it, and run `./install.sh`. See the bundled README for Dock pinning, custom shortcuts, and the optional top-bar indicator. If Shift+Alt+S is already assigned, choose another free shortcut.
+
+          This release is built and tested on an Ubuntu 24.04 GitHub runner. The release archive includes a SHA-256 sidecar.
+
+          ### Known verification limits
+
+          The verification desktop had one monitor; negative origins and mixed-scale multi-monitor layouts remain unverified. Physical-mouse checks, native chooser and overwrite confirmation, visual Dock context-menu interaction, and visual inspection of the top-bar indicator remain unverified. The suggested Shift+Alt+S was occupied in the verification account, so repeated shortcut captures were tested with Ctrl+Alt+Z. See `docs/manual-test.md` for the evidence and remaining checks.
+          EOF
+
+      - name: Publish release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="$GITHUB_REF_NAME"
+          title="Shooty ${tag#v}"
+          assets=(dist/shooty-*.tar.gz dist/shooty-*.tar.gz.sha256)
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release edit "$tag" --title "$title" --notes-file release-notes.md
+            gh release upload "$tag" "${assets[@]}" --clobber
+          else
+            gh release create "$tag" "${assets[@]}" --title "$title" --notes-file release-notes.md
+          fi
