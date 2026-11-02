@@ -219,10 +219,12 @@ settings.
 **Still requiring release sign-off:** There is no Git remote configured and
 `boffman/shooty` does not exist on GitHub. GitHub CLI and REST repository
 creation both returned HTTP 403, `Resource not accessible by personal access
-token`, so no tagged release URL can be reported. Shift+Alt+S remains
-unverified because it conflicts with the existing screenshot app; the
-alternate shortcut was exercised as described above. This session has one
-monitor, so
+token`. The repository was then created and pushed by the user. The `v0.1.0`
+source tag is now pushed, but `gh release create` and asset upload returned
+HTTP 403 for the current token, so the tagged GitHub Release is not yet
+published. Shift+Alt+S remains unverified because it conflicts with the
+existing screenshot app; the alternate shortcut was exercised as described
+above. This session has one monitor, so
 negative origins, mixed scale factors, seams, and multi-monitor stacking
 remain unverified. Physical-mouse checks and the overwrite confirmation are
 also still listed above. This archive is a tested release candidate; the
