@@ -174,24 +174,28 @@ account.
 
 Archive SHA-256 after adding milestone 2 capture code: `0db5c06b43d14be775d24bbccabe5e301cf4903e1b2233bd960d7d59be00698f`.
 
-## Milestone 6: desktop integration and release candidate
+## Milestone 6: desktop integration and published release
 
 **Environment:** Ubuntu 24.04.4 LTS, GNOME Shell 46.0, X11, GTK 3.24.
 
-The final release archive is built on this Ubuntu 24.04 host with
+The release archive is built on Ubuntu 24.04 by GitHub Actions with
 `./tools/build_release.sh`. It contains the PyInstaller one-directory bundle
 (Python runtime, application, and Pillow), root-free install and uninstall
 scripts, a freedesktop launcher, SVG icon, and first-run README. GTK/GObject
 Introspection typelibs, Cairo native libraries, and X11 are supplied by the
 standard Ubuntu desktop. `desktop-file-validate packaging/shooty.desktop`
-passed. The final archive passed fresh-account install, repeat install,
-`shooty --version`, `shooty --help`, desktop-file validation, PNG editor launch
-under Xvfb, and uninstall. The frozen capture overlay and frozen indicator
-both remained running when launched on the live GNOME X11 session; their
-processes were stopped after the smoke checks. The Ubuntu AppIndicators
-extension was enabled. The live milestone 5 GTK check passed again and
-exercised two simultaneously open editors, cross-window clipboard transfer,
-PNG save, and dirty-close choices.
+passed. The release workflow passed install, repeat install, `shooty --version`,
+`shooty --help`, desktop validation, PNG editor launch under Xvfb, and uninstall
+using a fresh HOME. An earlier local build of the same source was also
+installed and removed from a separately created standard account without sudo
+or a package manager. The published archive was downloaded and its SHA-256
+sidecar verified; this container disallows switching UID for an additional
+local account test. The frozen capture overlay and frozen indicator both
+remained running when launched on the live GNOME X11 session; their processes
+were stopped after the smoke checks. The Ubuntu AppIndicators extension was
+enabled. The live milestone 5 GTK check passed again and exercised two
+simultaneously open editors, cross-window clipboard transfer, PNG save, and
+dirty-close choices.
 
 The complete automated suite passed with
 `uv run --python 3.12 --with pytest python -m pytest -q` (51 tests).
@@ -199,11 +203,15 @@ Earlier recorded GNOME X11 checks for capture readback, overlay interaction,
 and repeated independent capture invocations are documented under milestones
 2 and 3 above.
 
-Release candidate: `dist/shooty-0.1.0.tar.gz` (116 MB), SHA-256
-`37dae91460ba1c0df270b349e6bb26755a1f27eb3c240e9a43859835401542d9`.
-The checksum is also in `dist/shooty-0.1.0.tar.gz.sha256`. The full test
-command `uv run --python 3.12 --with pytest python -m pytest -q` passed with
-51 tests; `git diff --check` passed.
+Published release: <https://github.com/boffman/shooty/releases/tag/v0.1.0>.
+The downloaded asset `shooty-0.1.0.tar.gz` is 36,904,057 bytes, SHA-256
+`dced9d131af9e18eb4fb07af9b870cf7434e34cb5334f2d9732afcf6b8886d61`.
+The sidecar `shooty-0.1.0.tar.gz.sha256` was downloaded and verified with
+`sha256sum -c`. The complete workflow run
+<https://github.com/boffman/shooty/actions/runs/41402927167> passed the full
+suite (`uv run --python 3.12 --with pytest python -m pytest -q`, 51 tests),
+Ubuntu 24.04 archive build, isolated-HOME install/upgrade/uninstall and CLI
+smoke checks, and release upload. `git diff --check` passed.
 
 The Ubuntu Dock favorites setting accepted `shooty.desktop`; I restored the
 original favorites list immediately afterward. The Ayatana menu exposed
@@ -216,16 +224,11 @@ opened a selection overlay; confirming both opened two editor windows
 simultaneously. I closed those windows and restored the original keybinding
 settings.
 
-**Still requiring release sign-off:** There is no Git remote configured and
-`boffman/shooty` does not exist on GitHub. GitHub CLI and REST repository
-creation both returned HTTP 403, `Resource not accessible by personal access
-token`. The repository was then created and pushed by the user. The `v0.1.0`
-source tag is now pushed, but `gh release create` and asset upload returned
-HTTP 403 for the current token, so the tagged GitHub Release is not yet
-published. Shift+Alt+S remains unverified because it conflicts with the
-existing screenshot app; the alternate shortcut was exercised as described
-above. This session has one monitor, so
-negative origins, mixed scale factors, seams, and multi-monitor stacking
-remain unverified. Physical-mouse checks and the overwrite confirmation are
-also still listed above. This archive is a tested release candidate; the
-release and complete manual sign-off are not finished.
+**Remaining manual checks:** Shift+Alt+S conflicts with the existing
+screenshot app, so the alternate Ctrl+Alt+Z shortcut was used for the repeated
+capture check described above. This session has one monitor; negative origins,
+mixed scale factors, seams, and multi-monitor stacking remain unverified.
+Physical-mouse checks, the GTK overwrite confirmation, visual Dock context
+menu pinning, and visual top-bar indicator inspection also remain unchecked.
+The release is published; these target-desktop checks still need a suitable
+interactive session.
