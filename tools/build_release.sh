@@ -9,12 +9,12 @@ stage=$(mktemp -d)
 trap 'rm -rf "$stage"' EXIT HUP INT TERM
 mkdir -p "$stage/$name/app/bundle"
 uv venv --system-site-packages --python /usr/bin/python3 "$stage/build-env"
-uv pip install --python "$stage/build-env/bin/python" pyinstaller==6.22.3 platformdirs
-"$stage/build-env/bin/pyinstaller" --noconfirm --clean --onedir \
+uv pip install --python "$stage/build-env/bin/python" pyinstaller==6.22.3 platformdirs jaraco.text
+PYTHONNOUSERSITE=1 "$stage/build-env/bin/pyinstaller" --noconfirm --clean --onedir \
     --name shooty --paths "$root/src" \
     --distpath "$stage/pyinstaller-dist" --workpath "$stage/pyinstaller-work" \
     --specpath "$stage" \
-    --collect-all PIL --collect-all platformdirs \
+    --collect-all PIL --collect-all platformdirs --collect-all jaraco \
     --hidden-import=gi._gi_cairo --hidden-import=cairo \
     --hidden-import=gi.repository.Gtk --hidden-import=gi.repository.Gdk \
     --hidden-import=gi.repository.GdkPixbuf --hidden-import=gi.repository.Gio \

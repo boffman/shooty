@@ -28,13 +28,39 @@ jobs:
           sudo apt-get install --yes \
             python3-gi python3-gi-cairo python3-cairo python3-pil \
             gir1.2-gtk-3.0 gir1.2-gdkpixbuf-2.0 \
-            gir1.2-ayatanaappindicator3-0.1
+            gir1.2-ayatanaappindicator3-0.1 xvfb desktop-file-utils
 
       - name: Run test suite
         run: uv run --python 3.12 --with pytest python -m pytest -q
 
       - name: Build Ubuntu 24.04 archive
         run: ./tools/build_release.sh
+
+      - name: Smoke test installed release bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/shooty-install-check"
+          mkdir -p "$root/archive"
+          tar -xzf dist/shooty-*.tar.gz -C "$root/archive"
+          app="$root/archive/shooty-0.1.0"
+          export HOME="$root/home"
+          export XDG_DATA_HOME="$HOME/.local/share"
+          mkdir -p "$HOME"
+          "$app/install.sh"
+          "$app/install.sh"
+          "$HOME/.local/bin/shooty" --version
+          "$HOME/.local/bin/shooty" --help
+          desktop-file-validate "$XDG_DATA_HOME/applications/shooty.desktop"
+          /usr/bin/python3 -c 'from PIL import Image; Image.new("RGBA", (20, 16), (20, 90, 220, 255)).save("/tmp/shooty-smoke.png")'
+          set +e
+          timeout 4 xvfb-run -a env NO_AT_BRIDGE=1 "$HOME/.local/bin/shooty" open /tmp/shooty-smoke.png
+          gui_status=$?
+          set -e
+          test "$gui_status" -eq 124
+          "$app/uninstall.sh"
+          test ! -e "$HOME/.local/bin/shooty"
+          test ! -e "$XDG_DATA_HOME/shooty"
 
       - name: Prepare release notes
         run: |
