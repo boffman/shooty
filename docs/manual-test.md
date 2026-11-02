@@ -200,7 +200,7 @@ and repeated independent capture invocations are documented under milestones
 2 and 3 above.
 
 Release candidate: `dist/shooty-0.1.0.tar.gz` (116 MB), SHA-256
-`84c4904066a2b0ebc2889369cb02dcdc12b38027f570aa7ea3445e96edcb75e9`.
+`37dae91460ba1c0df270b349e6bb26755a1f27eb3c240e9a43859835401542d9`.
 The checksum is also in `dist/shooty-0.1.0.tar.gz.sha256`. The full test
 command `uv run --python 3.12 --with pytest python -m pytest -q` passed with
 51 tests; `git diff --check` passed.
@@ -209,17 +209,20 @@ The Ubuntu Dock favorites setting accepted `shooty.desktop`; I restored the
 original favorites list immediately afterward. The Ayatana menu exposed
 Capture and Quit, and both callbacks plus the application hold were checked
 through GTK. I did not visually inspect the indicator in the top bar or pin
-the launcher through the Dock context menu. I tried temporary GNOME custom
-bindings for Shift+Alt+S and a diagnostic key; the X11-injected keys did not
-dispatch, and I restored the original settings. Repeated direct capture
-invocations were exercised earlier, but repeated invocations through the
-custom keyboard shortcut are still unverified.
+the launcher through the Dock context menu. The suggested Shift+Alt+S binding
+could not be grabbed because the user's existing screenshot app already uses
+it. With a temporary free Ctrl+Alt+Z binding, two shortcut invocations each
+opened a selection overlay; confirming both opened two editor windows
+simultaneously. I closed those windows and restored the original keybinding
+settings.
 
 **Still requiring release sign-off:** There is no Git remote configured and
 `boffman/shooty` does not exist on GitHub. GitHub CLI and REST repository
 creation both returned HTTP 403, `Resource not accessible by personal access
-token`, so no tagged release URL can be reported. The custom shortcut has not
-been made to dispatch on this session. This session has one monitor, so
+token`, so no tagged release URL can be reported. Shift+Alt+S remains
+unverified because it conflicts with the existing screenshot app; the
+alternate shortcut was exercised as described above. This session has one
+monitor, so
 negative origins, mixed scale factors, seams, and multi-monitor stacking
 remain unverified. Physical-mouse checks and the overwrite confirmation are
 also still listed above. This archive is a tested release candidate; the
