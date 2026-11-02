@@ -81,13 +81,27 @@ jobs:
       - name: Publish release assets
         env:
           GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
         run: |
-          tag="$GITHUB_REF_NAME"
+          set -euo pipefail
+          tag="${RELEASE_TAG:?release tag is missing}"
+          echo "Publishing release tag: $tag"
           title="Shooty ${tag#v}"
           assets=(dist/shooty-*.tar.gz dist/shooty-*.tar.gz.sha256)
-          if gh release view "$tag" >/dev/null 2>&1; then
-            gh release edit "$tag" --title "$title" --notes-file release-notes.md
-            gh release upload "$tag" "${assets[@]}" --clobber
+          body=$(cat release-notes.md)
+          existing_id=$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$tag" --jq .id 2>/dev/null || true)
+          if [[ -n "$existing_id" ]]; then
+            gh api "repos/$GITHUB_REPOSITORY/releases/$existing_id" --method PATCH \
+              -f name="$title" -f body="$body" -F draft=false -F prerelease=false >/dev/null
           else
-            gh release create "$tag" "${assets[@]}" --title "$title" --notes-file release-notes.md
+            gh api "repos/$GITHUB_REPOSITORY/releases" --method POST \
+              -f tag_name="$tag" -f name="$title" -f body="$body" \
+              -F draft=false -F prerelease=false >/dev/null
           fi
+          gh release upload "$tag" "${assets[@]}" --clobber
+
+          # Remove the untagged draft from the earlier failed release command.
+          while IFS= read -r draft_id; do
+            [[ -z "$draft_id" ]] || gh api "repos/$GITHUB_REPOSITORY/releases/$draft_id" --method DELETE
+          done < <(gh api "repos/$GITHUB_REPOSITORY/releases" --paginate \
+            --jq '.[] | select(.draft == true and (.tag_name | startswith("untagged-"))) | .id')
